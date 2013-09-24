@@ -15,12 +15,9 @@ class Gen60Co(cosmogenic_gen.CosmogenicGen):
     def __init__(self):
         super(Gen60Co, self).__init__("60Co")
     def _generate(self):
-        spectrum = decay_util.beta(0.3182, 0.9988)
-        spectrum.Add(decay_util.gamma(1.173228, 0.9985))  
-        spectrum.Add(decay_util.gamma(1.332492, 0.999826))
+        spectrum = decay_util.beta_gamma(0.3182, 2.5057, 0.9988)
         spectrum.SetName(self.get_name())
         return spectrum
-
 
 class Gen124Sb(cosmogenic_gen.CosmogenicGen):
     """ Antimony 124 background definition."""
@@ -34,6 +31,21 @@ class Gen124Sb(cosmogenic_gen.CosmogenicGen):
         spectrum.Add(decay_util.beta_gamma(1.5788, 1.3225, 0.0488))
         spectrum.Add(decay_util.beta_gamma(1.6557, 1.2486, 0.0257))
         spectrum.Add(decay_util.beta_gamma(2.3016, 0.6027, 0.232))
+        spectrum.SetName(self.get_name())
+        return spectrum
+
+class Gen125Sb(cosmogenic_gen.CosmogenicGen):
+    """ Antimony 125 background definition."""
+    def __init__(self):
+        super(Gen125Sb, self).__init__("125Sb")
+    def _generate(self):
+        spectrum = decay_util.beta_gamma(0.0953, 0.6714, 0.1342)
+        spectrum.Add(decay_util.beta_gamma(0.1245, 0.6422, 0.0575))
+        spectrum.Add(decay_util.beta_gamma(0.1306, 0.6361, 0.1788))
+        spectrum.Add(decay_util.beta_gamma(0.2415, 0.5252, 0.01609))
+        spectrum.Add(decay_util.beta_gamma(0.3033, 0.4634, 0.403))
+        spectrum.Add(decay_util.beta_gamma(0.4456, 0.3211, 0.0718))
+        spectrum.Add(decay_util.beta_gamma(0.6219, 0.1448, 0.136))
         spectrum.SetName(self.get_name())
         return spectrum
 
@@ -212,7 +224,7 @@ class Gen90Y(cosmogenic_gen.CosmogenicGen):
         spectrum.SetName(self.get_name())
         return spectrum
 
-
+#This is important
 class Gen88Y(cosmogenic_gen.CosmogenicGen):
     """ Yttrium 88 background definition."""
     def __init__(self):
@@ -223,7 +235,7 @@ class Gen88Y(cosmogenic_gen.CosmogenicGen):
         spectrum.SetName(self.get_name())
         return spectrum
 
-
+#Important
 class Gen102Rh(cosmogenic_gen.CosmogenicGen):
     """ Rhodium 102 background definition."""
     def __init__(self):
@@ -239,7 +251,7 @@ class Gen102Rh(cosmogenic_gen.CosmogenicGen):
         spectrum.SetName(self.get_name())
         return spectrum
 
-
+#Important
 class Gen102mRh(cosmogenic_gen.CosmogenicGen): 
     """ Rhodium 102m background definition."""
     def __init__(self):
@@ -274,7 +286,7 @@ class Gen106Rh(cosmogenic_gen.CosmogenicGen):
         spectrum.SetName(self.get_name())
         return spectrum
 
-
+#This is important
 class Gen110mAg(cosmogenic_gen.CosmogenicGen):     
     """ Argentum 110m background definition."""     
     def __init__(self):

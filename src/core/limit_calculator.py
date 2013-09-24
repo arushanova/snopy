@@ -14,10 +14,10 @@ class LimitCalculator(object):
         self._data_set = detected_data_set
         self._technique = technique
         self._data = data
-    def calculate(self):
+    def calculate(self, years=[1.0, 2.0, 3.0, 4.0]):
         """ Calculate the limits for the years suggested."""
         result_set = limit_set.SignalLimitSet()
-        for year in [1.0, 2.0, 3.0, 4.0]:
+        for year in years:
             self._data_set.scale_years(year)
             data = self._data
             if data is None:
