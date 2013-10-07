@@ -15,31 +15,34 @@ class SignalRejection(object):
     """ Base class for signal rejection application."""
     def __init__(self):
         """ Initialise the energy resolution and unique name."""
-        self._reduction_levels = {"238U" : 0.9998}
+        self._survival_levels = {"238U" : 0.0002}
 
-
-    def set_reduction_level(self, isotope, r_level):
-        """ Sets the reduction factor of an isotope. """
-        if isotope in self._reduction_levels:
-            self._reduction_levels[isotope] = r_level
-
-
+   
     def apply(self, raw_data):
         """ Apply the signal rejection to the raw_data."""
         result = spectrum_util.default_raw(raw_data.GetName())
         for bin_radius in range(1, raw_data.GetNbinsY() + 1):
-            for isotope, r_level in self._reduction_levels.iteritems():
-                for bin_energy in range(1, raw_data.GetNbinsX() + 1):
-                    net_count = raw_data.GetBinContent(bin_energy, bin_radius)
-                    survival_factor = self.get_survival_factor(raw_data.GetName(),
-                                                               (1-r_level)*raw_data.GetXaxis().GetBinCenter(bin_energy),
-                                                               (1-r_level)*raw_data.GetYaxis().GetBinCenter(bin_radius))
-                    result.SetBinContent(bin_energy, bin_radius, net_count * survival_factor)
+            for bin_energy in range(1, raw_data.GetNbinsX() + 1):
+                net_count = raw_data.GetBinContent(bin_energy, bin_radius)
+                survival_factor = self.get_survival_factor(raw_data.GetName(),
+                                                               raw_data.GetXaxis().GetBinCenter(bin_energy),
+                                                               raw_data.GetYaxis().GetBinCenter(bin_radius))
+                result.SetBinContent(bin_energy, bin_radius, net_count)
         return result
     ################################################################################################
     def get_survival_factor(self, name, energy, radius):
         """ Return the survival factor."""
-        pass
+     #   print name + "  HERE!!!"
+        new_energy = 1.0
+        if name in self._survival_levels:
+            survival_level = self._survival_levels[name]
+            new_energy = energy*survival_level
+        else:
+      #      print "no isotope!!!!!!!! <------------!"
+            pass
+       
+        return new_energy
+
 
 class NoRejection(SignalRejection):
     def get_survival_factor(self, name, energy, radius):
