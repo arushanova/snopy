@@ -108,20 +108,9 @@ def coincident_gamma(spectrum, q_gamma, probability):
         energy = spectrum.GetBinCenter(energy_bin)
         # Reduce fraction of events in this bin by 1 - probability
         spectrum.SetBinContent(energy_bin, content * (1.0 - probability))
+        bin_width = spectrum.GetBinWidth(energy_bin)
+
         new_energy = energy + q_gamma
         new_bin = spectrum.GetXaxis().FindBin(new_energy)
-        new_energyLow = spectrum.GetXaxis().GetBinLowEdge(energy_bin) + q_gamma
-        new_energyHigh = new_energyLow + spectrum.GetXaxis().GetBinWidth(energy_bin)
-        # Now fill correct bins
-        high_bin_fraction = (new_energyHigh - spectrum.GetXaxis().GetBinLowEdge(new_bin + 1)) / (new_energyHigh - new_energyLow)
-        if high_bin_fraction > 0.0:
-            spectrum.SetBinContent(new_bin + 1, 1, spectrum.GetBinContent(new_bin + 1) + content * probability * high_bin_fraction)
-
-        mid_bin_fraction = spectrum.GetXaxis().GetBinWidth(new_bin) / (new_energyHigh - new_energyLow)
-        if mid_bin_fraction > 0.0:
-            spectrum.SetBinContent(new_bin, 1, spectrum.GetBinContent(new_bin) + content * probability * mid_bin_fraction)
-
-        low_bin_fraction = (spectrum.GetXaxis().GetBinLowEdge(new_bin) - new_energyLow) / (new_energyHigh - new_energyLow)
-        if low_bin_fraction > 0.0:
-            spectrum.SetBinContent(new_bin - 1, 1, spectrum.GetBinContent(new_bin - 1) + content * probability * low_bin_fraction)
+        spectrum.SetBinContent(new_bin, content * probability)
     return spectrum

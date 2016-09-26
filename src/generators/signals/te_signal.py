@@ -6,10 +6,10 @@
 #
 # Author P G Jones - 17/04/2013 <p.g.jones@qmul.ac.uk> : First revision
 ####################################################################################################
-import radioactive_gen
+import te_gen
 import decay_util
 
-class Gen130Te0v(radioactive_gen.DoubleBetaGen):
+class Gen130Te0v(te_gen.DoubleBetaGen):
     """ Tellurium 130 background definition."""
     def __init__(self):
         # Kolita limit, conservative Dueck IBM and Klapdor claim mass

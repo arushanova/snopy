@@ -49,12 +49,89 @@ class DataPlotter(object):
         # Create summed background and bg + signal histograms
         self._summed_bg = spectrum_util.default_energy("Sum BG")
         self._sum_bg_signal = spectrum_util.default_energy("Sum BG + Signal")
+
         maxCounts = 0.0 # For rescaling the histogram axis
-        # Draw backgrounds and signal and summed histograms
+
+        file = open("Te15load.txt","w")
+#        file = open("ALL_BG_PU_limited.txt","w")
+   
+# OUTPUT FOR THE SIGNAL
+        low_energy_FWHM = self._signal.GetXaxis().FindBin(2.485)
+        high_energy_FWHM = self._signal.GetXaxis().FindBin(2.733)
+#        low_energy_PWHM = self._signal.GetXaxis().FindBin(2.529)
+ #       high_energy_PWHM = self._signal.GetXaxis().FindBin(2.664)
+
+        low_energy_per = self._signal.GetXaxis().FindBin(2.492)
+        high_energy_per = self._signal.GetXaxis().FindBin(2.675)
+        Integral_per = self._signal.Integral(low_energy_per, high_energy_per) 
+
+        Integral_FWHM = self._signal.Integral(low_energy_FWHM, high_energy_FWHM) 
+ #       Integral_PWHM = self._signal.Integral(low_energy_PWHM, high_energy_PWHM)
+        Tot_integral = self._signal.Integral()
+        Weight = self._signal.GetSumOfWeights() 
+        print str("!!!!!!!!!ATTENTION!!!!!!!!!!!!")
+        print self._signal
+        print str("Integral BIS MSB FWHM from 2.485 MeV to 2.733 MeV")
+        print Integral_FWHM
+        print str("Integral PERYLENE FWHM from 2.492 MeV to 2.675 MeV")
+        print Integral_per
+        print str("total number of events")
+        print Tot_integral
+        print str("WEIGHTS")
+        print Weight
+
+        file.write(str("SIGNAL")+"\n")
+        file.write(str("Integral BIS MSB FWHM from 2.485 MeV to 2.733 MeV")+"\n")
+        file.write(str(Integral_FWHM)+"\n")
+        file.write(str("Integral PERYLENE FWHM from 2.492 MeV to 2.675 MeV")+"\n")
+        file.write(str(Integral_per)+"\n")
+        file.write(str("total number of events")+"\n")
+        file.write(str(Tot_integral)+"\n")
+        file.write(str("")+"\n")
+
+ # THE END OF THE OUTPUT
+         # Draw backgrounds and signal and summed histograms
         for bg in self._backgrounds:
-            print bg.GetName()
+            print bg.GetName() 
             hist = bg
+            hist.SetLineWidth(1)  
             hist.Draw("SAME")
+   
+# THE OUTPUT FOR THE BACKGROUND
+            low_energy_FWHM = hist.GetXaxis().FindBin(2.485)
+            high_energy_FWHM = hist.GetXaxis().FindBin(2.733)
+#            low_energy_PWHM = hist.GetXaxis().FindBin(2.529)
+ #           high_energy_PWHM = hist.GetXaxis().FindBin(2.664)
+            Integral_FWHM = hist.Integral(low_energy_FWHM, high_energy_FWHM) 
+ #           Integral_PWHM = hist.Integral(low_energy_PWHM, high_energy_PWHM) 
+            Tot_integral = hist.Integral()
+            Weight = hist.GetSumOfWeights()
+
+            low_energy_per = hist.GetXaxis().FindBin(2.492)
+            high_energy_per = hist.GetXaxis().FindBin(2.675)
+            Integral_per = hist.Integral(low_energy_per, high_energy_per)  
+
+            print str("!!!!!!!!!ATTENTION!!!!!!!!!!!!")
+            print bg
+            print str("Integral BIS MSB FWHM from 2.485 MeV to 2.733 MeV")
+            print Integral_FWHM
+            print str("Integral PERYLENE FWHM from 2.492 MeV to 2.675 MeV")
+            print Integral_per
+            print str("total number of events")
+            print Tot_integral
+            print str("WEIGHTS")
+            print Weight
+            file.write(str("")+"\n")
+            file.write(str(bg.GetName())+"\n")
+            file.write(str("Integral BIS MSB FWHM from 2.485 MeV to 2.733 MeV")+"\n")
+            file.write(str(Integral_FWHM)+"\n")
+            file.write(str("Integral PERYLENE FWHM from 2.492 MeV to 2.675 MeV")+"\n")
+            file.write(str(Integral_per)+"\n")
+            file.write(str("total number of events")+"\n")
+            file.write(str(Tot_integral)+"\n")
+
+#THE END OF THE OUTPUT 
+                     
             hist.SetLineColor(self._colours.get_colour(bg.GetName()))
             hist.SetLineStyle(self._lines.get_style(bg.GetName()))
             self._histograms.append(hist)
@@ -71,24 +148,32 @@ class DataPlotter(object):
         self._sum_bg_signal.Add(self._summed_bg)
         self._signal.SetLineColor(self._colours.get_colour(self._signal.GetName()))
         self._signal.SetLineStyle(self._lines.get_style(self._signal.GetName()))
+        self._signal.SetLineWidth(1)  
         self._signal.Draw("SAME")
-        self._legend.AddEntry(self._signal, self._signal.GetName() + " : Sig", "l")
+        self._legend.AddEntry(self._signal, self._signal.GetName() + " : Sig", "l") 
         self._histograms.append(self._signal)
         self._sum_bg_signal.Add(self._signal)
         # Now draw the summed histograms
-        self._summed_bg.SetLineWidth(3)
+        self._summed_bg.SetLineWidth(2)
         self._summed_bg.Draw("SAME")
-        self._legend.AddEntry(self._summed_bg, "Sum BG", "l")
-        self._sum_bg_signal.SetLineWidth(4)
-        self._sum_bg_signal.SetLineStyle(2)
-        self._sum_bg_signal.Draw("SAME")
-        self._legend.AddEntry(self._sum_bg_signal, "Sum BG + Sig", "l")
+        print str("Summed_bg")
+        print self._summed_bg.Integral()
+        self._legend.AddEntry(self._summed_bg, "Sum BG", "l") 
+        self._sum_bg_signal.SetLineWidth(3)
+        self._sum_bg_signal.SetLineStyle(1)
+        self._sum_bg_signal.Draw("SAME") 
+        print str("Sum_bg_signal")
+        print self._sum_bg_signal.Integral()
+        self._legend.AddEntry(self._sum_bg_signal, "Sum BG + Sig", "l") 
         self._canvas.cd(1).SetLogy()
         self._canvas.cd(2)
         # Draw the legend on a different canvas
         self._legend.SetNColumns(self._legend.GetNRows() / 50 + 1)
         self._legend.Draw()
         self._canvas.cd()
+        
+        file.close()
+
         return self._canvas
 
 class RawDataPlotter(DataPlotter):

@@ -26,13 +26,14 @@ def _convolve_reject(spectra1, spectra2, rejection):
     """ Return a convolution of the two spectra with rejection applied."""
     convolved = _new_spectra(spectra1)
     ROOT.ConvolveReject(convolved, spectra1, spectra2)
+    return convolved
     # (c)(b1) = sum(b2) h1(b2) * h2( b1 - b2 )
     for b1 in range(1, convolved.GetNbinsX() + 1):
         h = 0.0
         for b2 in range(1, convolved.GetNbinsX() + 1):
             diff = b1 - b2
             if diff >= 1 and diff <= convolved.GetNbinsX():
-                survivalFactor = 1.0#rejection. ??
+                survivalFactor = 1.0
                 h = h + spectra1.GetBinContent(b2) * spectra2.GetBinContent(diff) * survivalFactor
         convolved.SetBinContent(b1, h)
     return convolved
@@ -41,13 +42,17 @@ def activity(bg1, bg2, bg3, pileup_window):
     """ Calculate the pileup activity of 1 + 2 + [3] in the window specified."""
     if bg3 is None:
         activity_in_sec = bg2.GetSumOfWeights() / constants.year_in_sec
+        print str("!!!!!!!!!!!!!!!!!!!!")
+        print bg1.GetName(),bg2.GetName(), activity_in_sec,  bg1.GetSumOfWeights() * math_util.poisson(activity_in_sec * pileup_window * constants.ns, 1)
         return bg1.GetSumOfWeights() * math_util.poisson(activity_in_sec * pileup_window * constants.ns, 1)
     elif bg2.GetName() == bg3.GetName(): 
         activity_in_sec = bg2.GetSumOfWeights() / constants.year_in_sec
+#        print str("!!!!!!!!!!")
+ #       print bg1.GetSumOfWeights() * math_util.poisson(activity_in_sec * pileup_window * constants.ns, 2)   #printout to check
         return bg1.GetSumOfWeights() * math_util.poisson(activity_in_sec * pileup_window * constants.ns, 2)
     else:
         activity2_in_sec = bg2.GetSumOfWeights() / constants.year_in_sec
-        activity3_in_sec = bg2.GetSumOfWeights() / constants.year_in_sec
+        activity3_in_sec = bg3.GetSumOfWeights() / constants.year_in_sec
         return bg1.GetSumOfWeights() * math_util.poisson(activity2_in_sec * pileup_window * constants.ns, 1) \
             * math_util.poisson(activity3_in_sec * pileup_window * constants.ns, 1)
 

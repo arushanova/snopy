@@ -46,7 +46,7 @@ class GenCNO(solar_gen.SolarGen):
 class GenB8(solar_gen.SolarGen):
     """ B8 neutrino background definition."""
     def __init__(self):
-        super(GenB8, self).__init__("B8", 2099)
+        super(GenB8, self).__init__("B8", 1621) #per 1000t (it is 1264 per scint volume - 780t)
     def _generate(self):
         spectrum = spectrum_util.default_energy()
         for energy_bin in range(1, spectrum.GetNbinsX() + 1):

@@ -1,4 +1,4 @@
- #!/usr/bin/env python
+#!/usr/bin/env python
 #
 # TeDataGen
 #
@@ -6,6 +6,8 @@
 #
 # Author P G Jones - 05/06/2013 <p.g.jones@qmul.ac.uk> : First revision
 # Author E Arushanova - 31/07/2013 <e.arushanova@qmul.ac.uk> : Second revision
+# The bg levels from  https://www.snolab.ca/snoplus/private/DocDB/0005/000507/026/Backgrounds_target_0p3Te.txt
+#507-v27
 ####################################################################################################
 import generators
 import data_set
@@ -14,41 +16,21 @@ import cosmogenic_gen
 
 class TeDataGen(object):
     """ Generates a full raw data set for Te loaded scintillator."""
-    def __init__(self, scint_mass, loading, cosmo_rate):
+    def __init__(self, scint_mass, loading):
         """ Initialise the target fractions dict, etc..."""
-        self._signal_fraction = 0.345
-        self._te_fractions = { "130Te2v" : 0.345,
-                               "238U" : 1.0e-15,
-                               "232Th" : 1.0e-14 }
-        self._scint_fractions = { "238U" : 1.6e-17,
-                                  "232Th" : 6.8e-18,
-                                  "14C" : 1e-18,
-                                  "40K" : 1.3e-18,
-                                  "39Ar" : 2.75e-24,
-                                  "85Kr" : 2.4e-25 }
-     #   self._cosmo_rates = { "60Co" : 500 }
+        self._signal_fraction = 0.3408
+        self._te_fractions = { "130Te2v" : 0.3408}
 
-     #  self._cosmo_rates =  {"26Al" : 0.67,
-        #                     "127Sb" : 165.46,
-         #                     "56Co" : 0.126,
-          #                    "58Co" : 1.29,
-           #                   "60Co" : 0.81,
-            #                  "126mSb" : 71.42,
-             #                 "22Na" : 1.01,
-              #                "44Sc" : 0.052,
-               #               "46Sc" : 1.97,
-                #              "68Ga" : 1.28,
-                #              "124Sb" : 182.4, 
-                  #            "84Rb" : 1.29,
-                   #           "90Y" : 0.165,
-                    #          "102mRh" : 11.77,
-                     #         "106Rh" : 0.058,
-                      #        "110mAg": 2.34  } # microBq / Kg-Te
-        self._solar_backgrounds = [ "PEP", "CNO", "B8", "Be7" ]
+        self._scint_fractions = { "210Po" : 9.54e9,   
+                                  "210Bi" : 7.94e9 }
+        
+        self._av_fractions = { "210PoAV" : 2.25e10,
+                               "210BiAV" : 2.14e10 }
+
+        self._solar_backgrounds = [ "B8" ]
         self._loading = loading
         self._scint_mass = scint_mass
-        self._cosmo_rate = cosmo_rate
-        self._te_mass = loading / 100.0 * scint_mass
+        self._te_mass = (loading/100) * scint_mass
         self._radius = 6000.0
     def set_scint_fraction(self, isotope, fraction):
         """ Set the fraction of an isotope in the scintillator."""
@@ -62,19 +44,40 @@ class TeDataGen(object):
             self._te_fractions[isotope] = fraction
         else:
             raise("Isotope not part of the Te set.")
-    #def
+    def set_av_fraction(self, isotope, fraction):
+        """ Set the fraction of an isotope in the AV."""
+        if isotope in self._av_fractions:
+            self._av_fractions[isotope] = fraction
+        else:
+            raise("Isotope not part of the AV set.")
+
     def generate(self):
         """ Generate a raw data set for Te loaded scintillator."""
         gen_set = data_set.RawDataSet("Te%d" % self._loading)
 
         # Scintillator backgrounds
         for isotope, fraction in self._scint_fractions.iteritems():
-            energy_spectrum = generators.generators[isotope].generate(self._scint_mass * fraction)
+#this is if I want to use the g/g  
+#            energy_spectrum = generators.generators[isotope].generate(self._scint_mass * fraction)
+            energy_spectrum = generators.generators[isotope].generate(fraction)
             # Apply an internal radial dependence
             spectrum = spectrum_util.apply_radial_spectrum(energy_spectrum, 
                                                            spectrum_util.internal(self._radius))
             gen_set.add_background(spectrum)
-
+        # AV backgrounds
+        for isotope, fraction in self._av_fractions.iteritems():
+            energy_spectrum = generators.generators[isotope].generate(fraction)
+            # Apply an internal radial dependence
+            spectrum = spectrum_util.apply_radial_spectrum(energy_spectrum, 
+                                                           spectrum_util.internal(self._radius))
+            gen_set.add_background(spectrum)
+        # Now Solar backgrounds
+        for isotope in self._solar_backgrounds:
+            energy_spectrum = generators.generators[isotope].generate(self._scint_mass)
+            # Apply an internal radial dependence
+            spectrum = spectrum_util.apply_radial_spectrum(energy_spectrum, 
+                                                           spectrum_util.internal(self._radius))
+            gen_set.add_background(spectrum)
         # Now Isotope backgrounds
         for isotope, fraction in self._te_fractions.iteritems():
             energy_spectrum = generators.generators[isotope].generate(self._te_mass * fraction)
@@ -83,21 +86,6 @@ class TeDataGen(object):
                                                            spectrum_util.internal(self._radius))
             gen_set.add_background(spectrum)
 
-        # Now Solar backgrounds
-        for isotope in self._solar_backgrounds:
-            energy_spectrum = generators.generators[isotope].generate(self._scint_mass)
-            # Apply an internal radial dependence
-            spectrum = spectrum_util.apply_radial_spectrum(energy_spectrum, 
-                                                           spectrum_util.internal(self._radius))
-            gen_set.add_background(spectrum)
-
-        # Now cosmogenics
-        energy_spectrum = generators.generators["60Co"].generate(self._cosmo_rate * 1e-9 * (3600.0 * 24.0 * 365.0) * self._te_mass) #initially rate is rate per second
-
-            # Apply an internal radial dependence
-        spectrum = spectrum_util.apply_radial_spectrum(energy_spectrum, 
-                                                       spectrum_util.internal(self._radius))
-        gen_set.add_background(spectrum)
         # Now the signal
 
         signal_energy_spectrum = generators.generators["130Te0v"].generate(self._te_mass * \

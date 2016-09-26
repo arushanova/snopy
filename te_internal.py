@@ -24,23 +24,22 @@ import limit_techniques
 start_time = time.clock()
 #limit_file = open("limits_212Bi.txt", "w")
 
-te_generator = te_data_gen.TeDataGen(780000, 0.3)
+te_generator = te_data_gen.TeDataGen(780000, 15.0) #0.3
 raw_data = te_generator.generate()
 print "Finished generation in", time.clock() - start_time, "s"
 detector_sim = simulation.Simulation("Default Sim", raw_data)
 detector_sim.set_pileup(True)
 #detector_sim.set_pileup(False)
-detector_sim.set_energy_resolution(energy_resolution.NhitResolution(200.0))
+detector_sim.set_energy_resolution(energy_resolution.NhitResolution(390.0)) #200
 detector_sim.set_signal_rejection(signal_rejection.SignalRejection()) 
 detector_sim.set_fiducial_rejection(fiducial_rejection.RadialFixedRejection(6000.0)) 
 detected_data = detector_sim.generate()
 print "Finsihed generation plus simulation in", time.clock() - start_time, "s"
 plotter = plot_data.DetectedDataPlotter(detected_data, colour_scheme.DefaultColours(), line_style.Default())
 canvas = plotter.plot(0.0, 6.0)
-#canvas.Print("210BPo14C_1th_year"+".pkl","pkl")
-#canvas.Print("210BiPo14C_1th_year_14C"+".pdf","pdf")
-#canvas.Print("210BiPo14C_1th_year"+".C","C")
-
+canvas.Print("Pu15load"+".root","root")
+canvas.Print("Pu15load"+".pdf","pdf")
+canvas.Print("Pu15load"+".C","C")
 
 raw_input("A")
      

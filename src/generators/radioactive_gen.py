@@ -5,6 +5,7 @@
 # Base class for generating radioactive backgrounds/signals
 #
 # Author P G Jones - 20/12/2012 <p.g.jones@qmul.ac.uk> : First revision
+# Author E Arushanova - 23/09/2014 <e.arushanova@qmul.ac.uk> : Second revision
 ####################################################################################################
 import generator
 import math
@@ -24,7 +25,13 @@ class RadioactiveGen(generator.Generator):
         return spectrum
     def get_activity(self, mass):
         """ Return the activity per year given the mass of this background/signal."""
-        return mass * math.log(2) / ( constants.U * self._atomic_mass * self._half_life )
+        print self._name 
+        return mass 
+#this is if I wasnt to use g/g
+#    def get_activity(self, mass):
+ #       """ Return the activity per year given the mass of this background/signal."""
+  #      print self._name, mass,  mass * math.log(2) / ( constants.U * self._atomic_mass * self._half_life )
+   #     return mass * math.log(2) / ( constants.U * self._atomic_mass * self._half_life )
 ####################################################################################################
 # Functions to override
     def _generate(self):

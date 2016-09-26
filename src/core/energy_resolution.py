@@ -28,6 +28,9 @@ class EnergyResolution(object):
         """ Return the sigma given the energy and radius."""
         pass
 
+
+
+
 # Load the function
 ROOT.gROOT.ProcessLine(".L " + os.path.dirname(__file__) + "/GaussianXConvolve.cc+");
 
@@ -60,5 +63,5 @@ class NhitResolution(GaussianResolution):
         num_hits = self._nhit_per_MeV * energy
         # Sigma in NHits is sqrt(num_hits) in energy it is times energy / num_hits or 1 / nhit_per_MeV
         return math.sqrt(num_hits) / num_hits * energy
-        
-        
+    
+

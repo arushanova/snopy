@@ -15,7 +15,7 @@ class Gen14C(radioactive_gen.RadioactiveGen):
     def __init__(self):
         super(Gen14C, self).__init__("14C", 14, 5730)
     def _generate(self):
-        spectrum = decay_util.beta(0.156, 1.0)
+        spectrum = decay_util.beta(0.156475, 1.0)
         spectrum.SetName(self.get_name())
         return spectrum
 
@@ -26,7 +26,7 @@ class Gen40K(radioactive_gen.RadioactiveGen):
         super(Gen40K, self).__init__("40K", 40, 1.277e9)
     def _generate(self):
         spectrum = decay_util.beta(1.311, 0.8928)
-        spectrum.Add(decay_util.gamma(1.460, 0.1067))
+        spectrum.Add(decay_util.gamma(1.460, 0.1066))
         spectrum.SetName(self.get_name())
         return spectrum
 
@@ -50,3 +50,28 @@ class Gen85Kr(radioactive_gen.RadioactiveGen):
         spectrum.Add(decay_util.beta_gamma(0.173, 0.514, 0.004))
         spectrum.SetName(self.get_name())
         return spectrum
+
+
+class Gen210Bi(radioactive_gen.RadioactiveGen):
+    """ Bismuth 210 background definition."""
+    # http://nucleardata.nuclear.lu.se/nucleardata/toi/nuclide.asp?iZA=360085
+    def __init__(self):
+        super(Gen210Bi, self).__init__("210Bi", 210, 0.0137)
+    def _generate(self):
+        spectrum = decay_util.beta(1.1621, 1.0)
+        spectrum.SetName(self.get_name())
+        return spectrum
+
+
+class Gen210Po(radioactive_gen.RadioactiveGen):
+    """ Polonium 210 background definition."""
+    # http://nucleardata.nuclear.lu.se/nucleardata/toi/nuclide.asp?iZA=360085
+    def __init__(self):
+        super(Gen210Po, self).__init__("210Po", 210, 0.3791)
+    def _generate(self):
+        spectrum = decay_util.alpha_gamma(5.30433, 0.10312, 1.0)
+        spectrum.SetName(self.get_name())
+        return spectrum
+
+
+
